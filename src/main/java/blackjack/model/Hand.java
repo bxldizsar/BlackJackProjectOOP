@@ -67,4 +67,37 @@ public class Hand {
                 return Integer.parseInt(rank);
             }
     }
+    
+    // Text form for the database, e.g. "A-C,10-H"
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        for(Card card : cards)
+        {
+            if(builder.length() > 0)
+            {
+                builder.append(",");
+            }
+            builder.append(card.toString());
+        }
+        return builder.toString();
+    }
+    
+    // Builds a hand from the database text; empty text gives an empty hand
+    public static Hand fromString(String text)
+    {
+        Hand hand = new Hand();
+        if(text == null || text.isEmpty())
+        {
+            return hand;
+        }
+        
+        String[] parts = text.split(",");
+        for(String part : parts)
+        {
+            hand.addCard(Card.fromString(part));
+        }
+        return hand;
+    }
 }

@@ -75,4 +75,13 @@ public class HandTest {
         hand.addCard(new Card("K", Suit.SPADES));
         assertFalse(hand.isBust());
     }
+    
+    // Text conversion works both ways
+    @Test
+    public void toStringAndFromStringRoundTrip()
+    {
+        Hand hand = Hand.fromString("A-C,10-H");
+        assertEquals("A-C,10-H", hand.toString());
+        assertEquals(21, hand.getValue());
+    }
 }
