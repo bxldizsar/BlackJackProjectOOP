@@ -11,12 +11,17 @@ package blackjack.ui;
  */
 
 // Table screen: dealer, two players, buttons and a status line
+import blackjack.model.Card;
 import blackjack.model.GameState;
+import blackjack.model.GameStatus;
+import blackjack.model.Hand;
 import blackjack.model.MoveType;
 import blackjack.model.Turn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -78,9 +83,48 @@ public class BlackjackScreen extends JPanel{
         add(south, BorderLayout.SOUTH);
     }
     
-    // empty body for now, we fill it in later
     public void showState(GameState state) 
     {
-        
+        showHand(dealerPanel, state.getDealerHand(), state.getStatus() != GameStatus.FINISHED);
+        showHand(p1Panel, state.getP1Hand(), false);
+        showHand(p2Panel, state.getP2Hand(), false);
+    }
+    
+    private void showHand(JPanel panel, String handText, boolean hideFirst)
+    {
+        panel.removeAll();                          // clear the old cards
+        Hand hand = Hand.fromString(handText);
+        List<Card> cards = hand.getCards();
+        for(int i = 0; i < cards.size(); i++)
+        {
+            ImageIcon icon;
+            if(hideFirst && i == 0)
+            {
+                icon = images.getBack();            // face-down card
+            }
+            else
+            {
+                icon = images.getImage(cards.get(i));
+            }
+            JLabel label;
+            if(icon == null)
+            {
+                if(hideFirst && i == 0)
+                {
+                    label = new JLabel("?");     // hidden card, never show its real text
+                }
+                else
+                {
+                    label = new JLabel(cards.get(i).toString());  // image missing: show text
+                }
+            }
+            else
+            {
+                label = new JLabel(icon);
+            }
+            panel.add(label);
+        }
+        panel.revalidate();                         // recalculate the layout
+        panel.repaint();                            // redraw
     }
 }
