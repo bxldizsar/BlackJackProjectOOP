@@ -20,6 +20,8 @@ import blackjack.model.Turn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -71,6 +73,7 @@ public class BlackjackScreen extends JPanel{
         stayButton = new JButton("STAY");
         newRoundButton = new JButton("NEW ROUND");
         statusLabel = new JLabel("", SwingConstants.CENTER);
+        statusLabel.setForeground(Color.WHITE);
         buttonRow.setOpaque(false);
         buttonRow.add(hitButton);
         buttonRow.add(stayButton);
@@ -81,6 +84,28 @@ public class BlackjackScreen extends JPanel{
         south.add(buttonRow, BorderLayout.CENTER);
         south.add(statusLabel, BorderLayout.SOUTH);
         add(south, BorderLayout.SOUTH);
+        
+        hitButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                actions.submitMove(me, MoveType.HIT);
+            }
+        });
+        stayButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                actions.submitMove(me, MoveType.STAY);
+            }
+        });
+        newRoundButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                actions.requestNewRound();
+            }
+        });
     }
     
     public void showState(GameState state) 
@@ -88,6 +113,13 @@ public class BlackjackScreen extends JPanel{
         showHand(dealerPanel, state.getDealerHand(), state.getStatus() != GameStatus.FINISHED);
         showHand(p1Panel, state.getP1Hand(), false);
         showHand(p2Panel, state.getP2Hand(), false);
+        
+        boolean myTurn = state.getStatus() == GameStatus.PLAYING 
+                && state.getTurn() == me;
+        hitButton.setEnabled(myTurn);
+        stayButton.setEnabled(myTurn);
+        newRoundButton.setEnabled(state.getStatus() == GameStatus.FINISHED);
+        statusLabel.setText(statusText(state));
     }
     
     private void showHand(JPanel panel, String handText, boolean hideFirst)
@@ -126,5 +158,37 @@ public class BlackjackScreen extends JPanel{
         }
         panel.revalidate();                         // recalculate the layout
         panel.repaint();                            // redraw
+    }
+    
+    private String statusText(GameState state)
+    {
+        if(state.getStatus() == GameStatus.WAITING)
+        {
+            return "Waiting for the other player to join...";
+        }
+        else if(state.getStatus() == GameStatus.TIMEOUT)
+        {
+            return "Game over: the other player did not move";
+        }
+        else if(state.getStatus() == GameStatus.FINISHED)
+        {
+            return "Round over";
+        }
+        else if(state.getStatus() == GameStatus.PLAYING && state.getTurn() == me)
+        {
+            return "Your turn";
+        }
+        else if(state.getStatus() == GameStatus.PLAYING && state.getTurn() == Turn.DEALER)
+        {
+            return "The dealer is drawing...";
+        }
+        else if(state.getStatus() == GameStatus.PLAYING)
+        {
+            return "Waiting for the other player...";
+        }
+        else
+        {
+            return "";
+        }
     }
 }
