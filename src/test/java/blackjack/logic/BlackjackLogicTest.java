@@ -6,6 +6,7 @@ package blackjack.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import blackjack.model.Deck;
 import blackjack.model.GameState;
 import blackjack.model.GameStatus;
@@ -51,5 +52,52 @@ public class BlackjackLogicTest {
         assertNotSame(original, next);
         assertEquals("", original.getP1Hand());
         assertEquals(GameStatus.WAITING, original.getStatus());
+    }
+    
+    // Builds a playing state where P1 is next, with the given hand and deck text
+    private GameState playingState(String p1Hand, String deckText)
+    {
+        GameState s = new GameState("AB12");
+        s.setStatus(GameStatus.PLAYING);
+        s.setTurn(Turn.P1);
+        s.setP1Hand(p1Hand);
+        s.setDeck(deckText);
+        return s;
+    }
+
+    // Hit adds the LAST card of the deck to the hand
+    @Test
+    public void hitAddsLastCardOfDeck()
+    {
+        GameState s = playingState("5-C,6-D", "2-H,3-S,4-D");
+        GameState next = logic.hit(s, Turn.P1);
+        assertEquals("5-C,6-D,4-D", next.getP1Hand());
+        assertEquals("2-H,3-S", next.getDeck());
+    }
+
+    // Without a bust, the turn stays with the same player
+    @Test
+    public void hitWithoutBustKeepsTurn()
+    {
+        GameState s = playingState("5-C,6-D", "2-H,3-S,4-D");
+        GameState next = logic.hit(s, Turn.P1);
+        assertEquals(Turn.P1, next.getTurn());
+    }
+
+    // A bust passes the turn to P2
+    @Test
+    public void hitBustPassesTurnToP2()
+    {
+        GameState s = playingState("10-C,6-D", "2-H,3-S,K-D");
+        GameState next = logic.hit(s, Turn.P1);
+        assertEquals(Turn.P2, next.getTurn());
+    }
+
+    // Hitting when it is not your turn throws an exception
+    @Test
+    public void hitOutOfTurnThrows()
+    {
+        GameState s = playingState("5-C,6-D", "2-H,3-S,4-D");
+        assertThrows(IllegalStateException.class, () -> logic.hit(s, Turn.P2));
     }
 }

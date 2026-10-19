@@ -39,4 +39,31 @@ public class BlackjackLogic {
         next.setStatus(GameStatus.PLAYING);
         return next;
     }
+    
+    // Player draws one card; if the hand busts, the turn goes to the next one
+    public GameState hit(GameState s, Turn player)
+    {
+        if(s.getTurn() != player)
+        {
+            throw new IllegalStateException("It is not this player's turn");
+        }
+        GameState next = s.copy();
+        Deck deck = Deck.fromString(next.getDeck());
+        Hand hand = Hand.fromString(next.getPlayerHand(player));
+        hand.addCard(deck.draw());
+        next.setDeck(deck.toString());
+        next.setPlayerHand(player, hand.toString());
+        if(hand.isBust())
+        { 
+            next.setTurn(nextTurn(player)); 
+        }
+        return next;
+    }
+    
+    // Who comes after the given player: P1 -> P2, P2 -> DEALER
+    private Turn nextTurn(Turn player)
+    {
+        if(player == Turn.P1) return Turn.P2;
+        else return Turn.DEALER;
+    }
 }
