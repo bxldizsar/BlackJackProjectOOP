@@ -100,4 +100,44 @@ public class BlackjackLogicTest {
         GameState s = playingState("5-C,6-D", "2-H,3-S,4-D");
         assertThrows(IllegalStateException.class, () -> logic.hit(s, Turn.P2));
     }
+    
+    // Stay passes the turn from P1 to P2
+    @Test
+    public void stayPassesTurnToP2()
+    {
+        GameState next = logic.stay(playingState("5-C,6-D", "2-H"), Turn.P1);
+        assertEquals(Turn.P2, next.getTurn());
+    }
+
+    // Stay out of turn throws
+    @Test
+    public void stayOutOfTurnThrows()
+    {
+        GameState s = playingState("5-C,6-D", "2-H");
+        assertThrows(IllegalStateException.class, () -> logic.stay(s, Turn.P2));
+    }
+
+    // Dealer with 10+5 = 15 draws a 3 (last card) and stops at 18
+    @Test
+    public void dealerDrawsUnderSeventeen()
+    {
+        GameState s = playingState("5-C,6-D", "2-H,3-S");
+        s.setTurn(Turn.DEALER);
+        s.setDealerHand("10-C,5-D");
+        GameState next = logic.playDealer(s);
+        assertEquals("10-C,5-D,3-S", next.getDealerHand());
+        assertEquals(GameStatus.FINISHED, next.getStatus());
+    }
+
+    // Dealer with 17 does not draw
+    @Test
+    public void dealerStopsAtSeventeen()
+    {
+        GameState s = playingState("5-C,6-D", "2-H,3-S");
+        s.setTurn(Turn.DEALER);
+        s.setDealerHand("10-C,7-D");
+        GameState next = logic.playDealer(s);
+        assertEquals("10-C,7-D", next.getDealerHand());
+        assertEquals(GameStatus.FINISHED, next.getStatus());
+    }
 }

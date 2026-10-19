@@ -60,10 +60,42 @@ public class BlackjackLogic {
         return next;
     }
     
+    // Player stays: the turn goes to the next one
+    public GameState stay(GameState s, Turn player)
+    {
+        if(s.getTurn() != player)
+        {
+            throw new IllegalStateException("It is not this player's turn");
+        }
+        GameState next = s.copy();
+        next.setTurn(nextTurn(player));
+        return next;
+    }
+    
     // Who comes after the given player: P1 -> P2, P2 -> DEALER
     private Turn nextTurn(Turn player)
     {
         if(player == Turn.P1) return Turn.P2;
         else return Turn.DEALER;
+    }
+    
+    // Dealer draws while under 17, then the round is finished
+    public GameState playDealer(GameState s)
+    {
+        if(s.getTurn() != Turn.DEALER)
+        {
+            throw new IllegalStateException("It is not the dealer's turn");
+        }
+        GameState next = s.copy();
+        Deck deck = Deck.fromString(next.getDeck());
+        Hand dealer = Hand.fromString(next.getDealerHand());
+        while(dealer.getValue() < 17)
+        {
+            dealer.addCard(deck.draw());
+        }
+        next.setDeck(deck.toString());
+        next.setDealerHand(dealer.toString());
+        next.setStatus(GameStatus.FINISHED);
+        return next;
     }
 }
