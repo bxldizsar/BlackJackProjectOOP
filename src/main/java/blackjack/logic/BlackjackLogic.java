@@ -98,4 +98,16 @@ public class BlackjackLogic {
         next.setStatus(GameStatus.FINISHED);
         return next;
     }
+    
+    // Result of one player against the dealer
+    public Outcome outcomeFor(GameState s, Turn player)
+    {
+        Hand playerHand = Hand.fromString(s.getPlayerHand(player));
+        Hand dealerHand = Hand.fromString(s.getDealerHand());
+        if(playerHand.isBust()) return Outcome.LOSE;
+        if(dealerHand.isBust()) return Outcome.WIN;
+        if(playerHand.getValue() > dealerHand.getValue()) return Outcome.WIN;
+        else if(playerHand.getValue() < dealerHand.getValue()) return Outcome.LOSE;
+        else return Outcome.PUSH;
+    }
 }
