@@ -1,2 +1,18 @@
-target/
-/nbproject/
+# maven build output
+/target/
+
+# netbeans local files, different on every pc
+/nbproject/private/
+nbactions*.xml
+nb-configuration.xml
+
+# compiled files
+*.class
+
+# os junk
+.DS_Store
+Thumbs.db
+
+# local settings and files made while running, never push these
+config.properties
+hands.csv
