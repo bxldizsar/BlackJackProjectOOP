@@ -2,7 +2,7 @@
 /target/
 
 # netbeans local files, different on every pc
-/nbproject/private/
+/nbproject/
 nbactions*.xml
 nb-configuration.xml
 
