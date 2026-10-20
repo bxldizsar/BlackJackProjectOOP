@@ -29,6 +29,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
+
 public class BlackjackScreen extends JPanel{
     
     public interface Actions
@@ -49,6 +51,10 @@ public class BlackjackScreen extends JPanel{
     private JLabel statusLabel;
     
     private final BlackjackLogic logic = new BlackjackLogic();
+    
+    private String baseStatus = "";   // the last status text without the countdown
+    
+    private GameState state;
     
     public BlackjackScreen(Turn me, Actions actions)
     {
@@ -113,6 +119,7 @@ public class BlackjackScreen extends JPanel{
     
     public void showState(GameState state) 
     {
+        this.state = state;
         showHand(dealerPanel, state.getDealerHand(), state.getStatus() != GameStatus.FINISHED);
         showHand(p1Panel, state.getP1Hand(), false);
         showHand(p2Panel, state.getP2Hand(), false);
@@ -122,7 +129,8 @@ public class BlackjackScreen extends JPanel{
         hitButton.setEnabled(myTurn);
         stayButton.setEnabled(myTurn);
         newRoundButton.setEnabled(state.getStatus() == GameStatus.FINISHED);
-        statusLabel.setText(statusText(state));
+        baseStatus = statusText(state);
+        statusLabel.setText(baseStatus);
     }
     
     private void showHand(JPanel panel, String handText, boolean hideFirst)
@@ -194,5 +202,18 @@ public class BlackjackScreen extends JPanel{
         {
             return "";
         }
+    }
+    
+    public void onCountdown(int secondsLeft)
+    {
+        if(state != null && state.getStatus() == GameStatus.PLAYING)
+        {
+            statusLabel.setText(baseStatus + " " + secondsLeft + " s");
+        }
+    }
+    
+    public void onConnectionProblem(String message)
+    {
+        statusLabel.setText("Connection problem: " + message);
     }
 }
