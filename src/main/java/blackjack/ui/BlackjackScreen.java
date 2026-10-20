@@ -63,7 +63,7 @@ public class BlackjackScreen extends JPanel{
         setLayout(new BorderLayout());
         setBackground(new Color(0, 100, 0)); //green table
         
-        JPanel center = new JPanel(new GridLayout(3, 1));
+        JPanel center = new JPanel(new GridLayout(2, 1));
         center.setOpaque(false);
         dealerPanel = new JPanel();
         p1Panel = new JPanel();
@@ -71,9 +71,12 @@ public class BlackjackScreen extends JPanel{
         dealerPanel.setOpaque(false);
         p1Panel.setOpaque(false);
         p2Panel.setOpaque(false);
-        center.add(dealerPanel);
-        center.add(p1Panel);
-        center.add(p2Panel);
+        JPanel bottomRow = new JPanel(new GridLayout(1, 2));
+        bottomRow.setOpaque(false);
+        center.add(makeArea("Dealer", dealerPanel));
+        bottomRow.add(makeArea(titleFor(Turn.P1), p1Panel));
+        bottomRow.add(makeArea(titleFor(Turn.P2), p2Panel));
+        center.add(bottomRow);
         add(center, BorderLayout.CENTER);
         
         // default layout is FlowLayout
@@ -215,5 +218,34 @@ public class BlackjackScreen extends JPanel{
     public void onConnectionProblem(String message)
     {
         statusLabel.setText("Connection problem: " + message);
+    }
+    
+    private JPanel makeArea(String title, JPanel cardsPanel)
+    {
+        JPanel area = new JPanel(new BorderLayout());
+        area.setOpaque(false);
+        JLabel label = new JLabel(title, SwingConstants.CENTER);
+        label.setForeground(Color.WHITE);
+        area.add(label, BorderLayout.NORTH);
+        area.add(cardsPanel, BorderLayout.CENTER);
+        return area;
+    }
+    
+    private String titleFor(Turn player)
+    {
+        String title;
+        if(player == Turn.P1)
+        {
+            title = "Player 1";
+        }
+        else
+        {
+            title = "Player 2";
+        }
+        if(player == me)
+        {
+            title += " (you)";
+        }
+        return title;
     }
 }
