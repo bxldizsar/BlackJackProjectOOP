@@ -12,6 +12,9 @@ import java.util.List;
  */
 public class Hand {
     
+    // The highest value that is still not a bust
+    public static final int BLACKJACK = 21;
+    
     private final List<Card> cards = new ArrayList<>();
     
     public void addCard(Card card)
@@ -37,8 +40,8 @@ public class Hand {
             }
         }
         
-        //If the value of the cards went above 21, count A as 1
-        while(sum > 21 && aceCount > 0)
+        //If the value of the cards went above 21, count ACE as 1 instead of 11
+        while(sum > BLACKJACK && aceCount > 0)
         {
             sum -= 10;
             aceCount--;
@@ -48,7 +51,7 @@ public class Hand {
     
     public boolean isBust()
     {
-        return getValue() > 21;
+        return getValue() > BLACKJACK;
     }
     
     // Text form for the database, e.g. "A-C,10-H"
