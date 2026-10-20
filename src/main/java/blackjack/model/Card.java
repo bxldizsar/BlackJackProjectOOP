@@ -9,7 +9,7 @@ package blackjack.model;
  * @author ministar
  */
 
-// One playing card: a rank ("2".."10", "J", "Q", "K", "A") and a suit
+// One playing card: a rank and a suit
 public class Card {
     
     private final Rank rank;

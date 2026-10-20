@@ -30,6 +30,8 @@ import javax.swing.SwingConstants;
 // Table screen: dealer, two players, buttons and a status line
 public class BlackjackScreen extends JPanel{
     
+    private static final Color TABLE_GREEN = new Color(20, 100, 0);
+
     public interface Actions
     {
         void submitMove(Turn me, MoveType move);
@@ -39,15 +41,16 @@ public class BlackjackScreen extends JPanel{
     private final Turn me;
     private final Actions actions;
     
-    private static final Color TABLE_GREEN = new Color(20, 100, 0);
-    
     private final CardImages images = new CardImages();
+    
     private final JPanel dealerPanel = new JPanel();
     private final JPanel p1Panel = new JPanel();
     private final JPanel p2Panel = new JPanel();
+    
     private final JButton hitButton = new JButton("HIT");
     private final JButton stayButton = new JButton("STAY");
     private final JButton newRoundButton = new JButton("NEW ROUND");
+    
     private final JLabel statusLabel = new JLabel("", SwingConstants.CENTER);
     
     private final BlackjackLogic logic = new BlackjackLogic();
