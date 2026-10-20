@@ -36,6 +36,10 @@ public class ScreenDemo {
             }
         });
         
+        state = logic.stay(state, Turn.P1);
+        state = logic.stay(state, Turn.P2);
+        state =logic.playDealer(state);
+        
         screen.showState(state);
         
         JFrame frame = new JFrame("Blackjack demo");

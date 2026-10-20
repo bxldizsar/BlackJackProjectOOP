@@ -17,6 +17,7 @@ import blackjack.model.GameStatus;
 import blackjack.model.Hand;
 import blackjack.model.MoveType;
 import blackjack.model.Turn;
+import blackjack.logic.BlackjackLogic;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -46,6 +47,8 @@ public class BlackjackScreen extends JPanel{
     private JButton stayButton;
     private JButton newRoundButton;
     private JLabel statusLabel;
+    
+    private final BlackjackLogic logic = new BlackjackLogic();
     
     public BlackjackScreen(Turn me, Actions actions)
     {
@@ -172,7 +175,8 @@ public class BlackjackScreen extends JPanel{
         }
         else if(state.getStatus() == GameStatus.FINISHED)
         {
-            return "Round over";
+            return "Round over - P1: " + logic.outcomeFor(state, Turn.P1)
+                    + ", P2: " + logic.outcomeFor(state, Turn.P2);
         }
         else if(state.getStatus() == GameStatus.PLAYING && state.getTurn() == me)
         {
