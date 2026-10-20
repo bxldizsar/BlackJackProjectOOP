@@ -19,6 +19,10 @@ public class Hand {
     
     public void addCard(Card card)
     {
+        if(card == null)
+        {
+            throw new IllegalArgumentException("Card must not be null");
+        }
         cards.add(card);
     }
     

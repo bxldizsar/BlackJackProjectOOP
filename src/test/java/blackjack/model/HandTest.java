@@ -7,6 +7,7 @@ package blackjack.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 /**
  *
@@ -83,5 +84,12 @@ public class HandTest {
         Hand hand = Hand.fromString("A-C,10-H");
         assertEquals("A-C,10-H", hand.toString());
         assertEquals(21, hand.getValue());
+    }
+    
+    @Test
+    public void addNullCardThrows()
+    {
+        Hand hand = new Hand();
+        assertThrows(IllegalArgumentException.class, () -> hand.addCard(null));
     }
 }

@@ -47,4 +47,10 @@ public class CardTest {
     {
         assertThrows(IllegalArgumentException.class, () -> new Card(null, Suit.CLUBS));
     }
+    
+    @Test
+    public void fromNullTextThrows()
+    {
+        assertThrows(IllegalArgumentException.class, () -> Card.fromString(null));
+    }
 }

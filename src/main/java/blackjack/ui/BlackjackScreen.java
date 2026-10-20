@@ -61,6 +61,10 @@ public class BlackjackScreen extends JPanel{
     
     public BlackjackScreen(Turn me, Actions actions)
     {
+        if(me != Turn.P1 && me != Turn.P2)
+        {
+            throw new IllegalArgumentException("The screen belongs to P1 or P2");
+        }
         this.me = me;
         this.actions = actions;
         setLayout(new BorderLayout());

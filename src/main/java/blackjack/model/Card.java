@@ -41,6 +41,10 @@ public class Card {
     
     public static Card fromString(String text)
     {
+        if(text == null)
+        {
+            throw new IllegalArgumentException("Card text must not be null");
+        }
         String[] parts = text.split("-");
         if(parts.length != 2)
         {
