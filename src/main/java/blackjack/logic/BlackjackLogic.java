@@ -24,6 +24,10 @@ public class BlackjackLogic {
     public GameState dealNewRound(GameState s)
     {
         GameState next = s.copy();
+        if(s.getStatus() == GameStatus.FINISHED)
+        {
+            next.setRound(s.getRound() + 1);
+        }
         Deck deck = Deck.createShuffled();
         Hand dealer = new Hand();
         Hand p1 = new Hand();

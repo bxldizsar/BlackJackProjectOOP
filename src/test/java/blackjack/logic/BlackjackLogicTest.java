@@ -193,4 +193,18 @@ public class BlackjackLogicTest {
         assertEquals(Outcome.WIN, logic.outcomeFor(s, Turn.P2));
         assertEquals(Outcome.LOSE, logic.outcomeFor(s, Turn.P1));
     }
+
+    // Dealing after a finished round starts the next round number
+    @Test
+    public void dealAfterFinishedIncreasesRound() {
+        GameState s = new GameState("AB12");
+        s.setStatus(GameStatus.FINISHED);
+        assertEquals(2, logic.dealNewRound(s).getRound());
+    }
+
+    // The very first deal stays in round 1
+    @Test
+    public void firstDealKeepsRoundOne() {
+        assertEquals(1, logic.dealNewRound(new GameState("AB12")).getRound());
+    }
 }
