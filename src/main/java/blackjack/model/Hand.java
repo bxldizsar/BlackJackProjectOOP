@@ -30,8 +30,8 @@ public class Hand {
         int aceCount = 0;
         for(Card card : cards)
         {
-            sum += cardValue(card);
-            if(card.getRank().equals("A"))
+            sum += card.getRank().getValue();
+            if(card.getRank() == Rank.ACE)
             {
                 aceCount++;
             }
@@ -49,23 +49,6 @@ public class Hand {
     public boolean isBust()
     {
         return getValue() > 21;
-    }
-    
-    private int cardValue(Card card)
-    {
-        String rank = card.getRank();
-        if(rank.equals("A"))
-        {
-            return 11;
-        }
-        else if(rank.equals("J") || rank.equals("Q") || rank.equals("K"))
-        {
-            return 10;
-        }
-            else
-            {
-                return Integer.parseInt(rank);
-            }
     }
     
     // Text form for the database, e.g. "A-C,10-H"

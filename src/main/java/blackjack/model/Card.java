@@ -12,22 +12,26 @@ package blackjack.model;
 // One playing card: a rank ("2".."10", "J", "Q", "K", "A") and a suit
 public class Card {
     
-    private final String rank;
+    private final Rank rank;
     private final Suit suit;
     
-    public Card(String rank, Suit suit)
+    public Card(Rank rank, Suit suit)
     {
+        if(rank == null || suit == null)
+        {
+            throw new IllegalArgumentException("Card needs a rank and a suit");
+        }
         this.rank = rank;
         this.suit = suit;
     }
     
-    public String getRank(){ return rank; }
+    public Rank getRank(){ return rank; }
     public Suit getSuit(){ return suit; }
     
     @Override
     public String toString()
     {
-        return rank + "-" + suit.getCode();
+        return rank.getCode() + "-" + suit.getCode();
     }
     
     public String getImageName()
@@ -42,6 +46,6 @@ public class Card {
         {
             throw new IllegalArgumentException("Invalid card: " + text);
         }
-        return new Card(parts[0], Suit.fromCode(parts[1]));
+        return new Card(Rank.fromCode(parts[0]), Suit.fromCode(parts[1]));
     }
 }
