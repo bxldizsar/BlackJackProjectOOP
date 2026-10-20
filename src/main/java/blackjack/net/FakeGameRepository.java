@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package blackjack.net;
 
 import blackjack.model.GameState;
@@ -90,10 +87,10 @@ public class FakeGameRepository implements GameRepository
         }
         return null;
     }
-    //makes a new room code: T1,T2,T3,...
+    //makes a new room code: 1001,1002,...
     private String nextCode()
     {
         codeCounter ++;
-        return "T" + codeCounter;
+        return String.valueOf(1000 + codeCounter);
     }
 }
