@@ -22,7 +22,7 @@ public class FakeGameRepository implements GameRepository
     private int codeCounter = 0; 
 
     @Override
-    public GameState createGame(GameState initial) throws IOException {
+    public synchronized GameState createGame(GameState initial) throws IOException {
         GameState game = initial.copy();
         // the code must be unique, like the key in the real table
         while (findGame(game.getCode()) != null) 
@@ -34,7 +34,7 @@ public class FakeGameRepository implements GameRepository
     }
 
     @Override
-    public GameState joinGame(String code) throws IOException {
+    public synchronized GameState joinGame(String code) throws IOException {
         GameState game = findGame(code);
         // wrong code, game already started, or someone already joined
         if (game == null || game.getStatus() != GameStatus.WAITING || game.getP2Id() != null) 
@@ -48,7 +48,7 @@ public class FakeGameRepository implements GameRepository
     }
 
     @Override
-    public GameState readGame(String code) throws IOException {
+    public synchronized GameState readGame(String code) throws IOException {
         GameState game = findGame(code);
         if (game == null) {
             return null;
@@ -58,7 +58,7 @@ public class FakeGameRepository implements GameRepository
     }
 
     @Override
-    public boolean updateGame(GameState newState, int expectedVersion) throws IOException {
+    public synchronized boolean updateGame(GameState newState, int expectedVersion) throws IOException {
         GameState stored = findGame(newState.getCode());
         // there is no room with this code
         if (stored == null) {
