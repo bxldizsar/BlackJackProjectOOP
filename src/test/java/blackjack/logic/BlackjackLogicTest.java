@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  *
  * @author ministar
  */
-
 // Tests for BlackjackLogic
 public class BlackjackLogicTest {
 
@@ -167,5 +166,31 @@ public class BlackjackLogicTest {
     public void equalValuePushes() {
         GameState s = finishedState("10-C,8-D", "10-H,8-H");
         assertEquals(Outcome.PUSH, logic.outcomeFor(s, Turn.P1));
+    }
+
+    // P2 busts: the turn goes to the dealer
+    @Test
+    public void hitBustPassesTurnFromP2ToDealer() {
+        GameState s = playingState("5-C,6-D", "2-H,3-S,K-D");
+        s.setTurn(Turn.P2);
+        s.setPlayerHand(Turn.P2, "10-C,6-D");
+        GameState next = logic.hit(s, Turn.P2);
+        assertEquals(Turn.DEALER, next.getTurn());
+    }
+
+    // playDealer outside the dealer's turn throws
+    @Test
+    public void playDealerOutOfTurnThrows() {
+        GameState s = playingState("5-C,6-D", "2-H,3-S");
+        assertThrows(IllegalStateException.class, () -> logic.playDealer(s));
+    }
+
+    // The outcome works for P2 too
+    @Test
+    public void outcomeForP2() {
+        GameState s = finishedState("10-C,7-D", "10-H,8-H");
+        s.setP2Hand("10-C,9-D");
+        assertEquals(Outcome.WIN, logic.outcomeFor(s, Turn.P2));
+        assertEquals(Outcome.LOSE, logic.outcomeFor(s, Turn.P1));
     }
 }
