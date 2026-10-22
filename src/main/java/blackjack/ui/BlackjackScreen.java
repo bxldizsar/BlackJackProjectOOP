@@ -18,6 +18,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -32,7 +33,8 @@ import javax.swing.SwingConstants;
 public class BlackjackScreen extends JPanel implements GameSyncListener{
     
     private static final Color TABLE_GREEN = new Color(20, 100, 0);
-
+    private static final int MAX_CARDS_PER_ROW = 4;
+    
     public interface Actions
     {
         void submitMove(Turn me, MoveType move);
@@ -44,9 +46,9 @@ public class BlackjackScreen extends JPanel implements GameSyncListener{
     
     private final CardImages images = new CardImages();
     
-    private final JPanel dealerPanel = new JPanel();
-    private final JPanel p1Panel = new JPanel();
-    private final JPanel p2Panel = new JPanel();
+    private final JPanel dealerPanel = new JPanel(new BorderLayout());
+    private final JPanel p1Panel = new JPanel(new BorderLayout());
+    private final JPanel p2Panel = new JPanel(new BorderLayout());
     
     private final JButton hitButton = new JButton("HIT");
     private final JButton stayButton = new JButton("STAY");
@@ -75,17 +77,20 @@ public class BlackjackScreen extends JPanel implements GameSyncListener{
         addListeners();
     }
     
-    // The three hand panels (dealer, P1, P2) on the green table
+    // Dealer on top, P1 and P2 side by side below, each with a title
     private JPanel buildCenter()
     {
-        JPanel center = new JPanel(new GridLayout(3, 1));
+        JPanel center = new JPanel(new GridLayout(2, 1));
         center.setOpaque(false);
+        JPanel bottomRow = new JPanel(new GridLayout(1, 2, 10, 0));
+        bottomRow.setOpaque(false);
         dealerPanel.setOpaque(false);
         p1Panel.setOpaque(false);
         p2Panel.setOpaque(false);
-        center.add(dealerPanel);
-        center.add(p1Panel);
-        center.add(p2Panel);
+        center.add(makeArea("Dealer", dealerPanel));
+        bottomRow.add(makeArea(titleFor(Turn.P1), p1Panel));
+        bottomRow.add(makeArea(titleFor(Turn.P2), p2Panel));
+        center.add(bottomRow);
         return center;
     }
     
@@ -165,11 +170,21 @@ public class BlackjackScreen extends JPanel implements GameSyncListener{
     private void showHand(JPanel panel, String handText, boolean hideFirst)
     {
         panel.removeAll();                          // clear the old cards
+        JPanel rows = new JPanel(new GridLayout(0, 1));   // the rows are packed tightly together
+        rows.setOpaque(false);
+        panel.add(rows, BorderLayout.NORTH);
         Hand hand = Hand.fromString(handText);
         List<Card> cards = hand.getCards();
+        JPanel row = null;
         for(int i = 0; i < cards.size(); i++)
         {
-            panel.add(createCardLabel(cards.get(i), hideFirst && i == 0));
+            if(i % MAX_CARDS_PER_ROW == 0)
+            {
+                row = new JPanel();
+                row.setOpaque(false);
+                rows.add(row);
+            }
+            row.add(createCardLabel(cards.get(i), hideFirst && i == 0));
         }
         panel.revalidate();                         // recalculate the layout
         panel.repaint();                            // redraw
@@ -242,5 +257,35 @@ public class BlackjackScreen extends JPanel implements GameSyncListener{
     public void onConnectionProblem(String message)
     {
         statusLabel.setText("Connection problem: " + message);
+    }
+    
+    private String titleFor(Turn player)
+    {
+        String title;
+        if(player == Turn.P1)
+        {
+            title = "Player 1";
+        }
+        else
+        {
+            title = "Player 2";
+        }
+        if(player == me)
+        {
+            title += " (you)";
+        }
+        return title;
+    }
+    
+    // A titled area: a white title above the cards of one player
+    private JPanel makeArea(String title, JPanel cardsPanel)
+    {
+        JPanel area = new JPanel(new BorderLayout());
+        area.setOpaque(false);
+        JLabel label = new JLabel(title, SwingConstants.CENTER);
+        label.setForeground(Color.WHITE);
+        area.add(label, BorderLayout.NORTH);
+        area.add(cardsPanel, BorderLayout.CENTER);
+        return area;
     }
 }
