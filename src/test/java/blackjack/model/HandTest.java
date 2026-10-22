@@ -7,6 +7,7 @@ package blackjack.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 /**
  *
@@ -21,8 +22,8 @@ public class HandTest {
     public void kingAndSevenIsSeventeen()
     {
         Hand hand = new Hand();
-        hand.addCard(new Card("K", Suit.SPADES));
-        hand.addCard(new Card("7", Suit.HEARTS));
+        hand.addCard(new Card(Rank.KING, Suit.SPADES));
+        hand.addCard(new Card(Rank.SEVEN, Suit.HEARTS));
         assertEquals(17, hand.getValue());
     }
     
@@ -31,8 +32,8 @@ public class HandTest {
     public void aceAndKingIsTwentyOne()
     {
         Hand hand = new Hand();
-        hand.addCard(new Card("A", Suit.DIAMONDS));
-        hand.addCard(new Card("K", Suit.SPADES));
+        hand.addCard(new Card(Rank.ACE, Suit.DIAMONDS));
+        hand.addCard(new Card(Rank.KING, Suit.SPADES));
         assertEquals(21, hand.getValue());
     }
     
@@ -40,9 +41,9 @@ public class HandTest {
     @Test
     public void aceNineFiveIsFifteen() {
         Hand hand = new Hand();
-        hand.addCard(new Card("A", Suit.CLUBS));
-        hand.addCard(new Card("9", Suit.CLUBS));
-        hand.addCard(new Card("5", Suit.CLUBS));
+        hand.addCard(new Card(Rank.ACE, Suit.CLUBS));
+        hand.addCard(new Card(Rank.NINE, Suit.CLUBS));
+        hand.addCard(new Card(Rank.FIVE, Suit.CLUBS));
         assertEquals(15, hand.getValue());
     }
 
@@ -50,9 +51,9 @@ public class HandTest {
     @Test
     public void twoAcesAndNineIsTwentyOne() {
         Hand hand = new Hand();
-        hand.addCard(new Card("A", Suit.CLUBS));
-        hand.addCard(new Card("A", Suit.DIAMONDS));
-        hand.addCard(new Card("9", Suit.CLUBS));
+        hand.addCard(new Card(Rank.ACE, Suit.CLUBS));
+        hand.addCard(new Card(Rank.ACE, Suit.DIAMONDS));
+        hand.addCard(new Card(Rank.NINE, Suit.CLUBS));
         assertEquals(21, hand.getValue());
     }
 
@@ -60,9 +61,9 @@ public class HandTest {
     @Test
     public void tenJackQueenIsBust() {
         Hand hand = new Hand();
-        hand.addCard(new Card("10", Suit.CLUBS));
-        hand.addCard(new Card("J", Suit.DIAMONDS));
-        hand.addCard(new Card("Q", Suit.CLUBS));
+        hand.addCard(new Card(Rank.TEN, Suit.CLUBS));
+        hand.addCard(new Card(Rank.JACK, Suit.DIAMONDS));
+        hand.addCard(new Card(Rank.QUEEN, Suit.CLUBS));
         assertEquals(30, hand.getValue());
         assertTrue(hand.isBust());
     }
@@ -71,8 +72,8 @@ public class HandTest {
     @Test
     public void twentyOneIsNotBust() {
         Hand hand = new Hand();
-        hand.addCard(new Card("A", Suit.DIAMONDS));
-        hand.addCard(new Card("K", Suit.SPADES));
+        hand.addCard(new Card(Rank.ACE, Suit.DIAMONDS));
+        hand.addCard(new Card(Rank.KING, Suit.SPADES));
         assertFalse(hand.isBust());
     }
     
@@ -83,5 +84,12 @@ public class HandTest {
         Hand hand = Hand.fromString("A-C,10-H");
         assertEquals("A-C,10-H", hand.toString());
         assertEquals(21, hand.getValue());
+    }
+    
+    @Test
+    public void addNullCardThrows()
+    {
+        Hand hand = new Hand();
+        assertThrows(IllegalArgumentException.class, () -> hand.addCard(null));
     }
 }

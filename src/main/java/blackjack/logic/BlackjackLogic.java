@@ -17,10 +17,17 @@ import blackjack.model.Turn;
 // Pure game rules: methods never change the given state, they return a new one
 public class BlackjackLogic {
     
+    // The dealer draws while the hand value is below this
+    private static final int DEALER_STAND_VALUE = 17;
+    
     // Starts a new round: new shuffled deck, 2 cards for everyone, P1 is next
     public GameState dealNewRound(GameState s)
     {
         GameState next = s.copy();
+        if(s.getStatus() == GameStatus.FINISHED)
+        {
+            next.setRound(s.getRound() + 1);
+        }
         Deck deck = Deck.createShuffled();
         Hand dealer = new Hand();
         Hand p1 = new Hand();
@@ -43,10 +50,7 @@ public class BlackjackLogic {
     // Player draws one card; if the hand busts, the turn goes to the next one
     public GameState hit(GameState s, Turn player)
     {
-        if(s.getTurn() != player)
-        {
-            throw new IllegalStateException("It is not this player's turn");
-        }
+        requireTurn(s, player);
         GameState next = s.copy();
         Deck deck = Deck.fromString(next.getDeck());
         Hand hand = Hand.fromString(next.getPlayerHand(player));
@@ -63,10 +67,7 @@ public class BlackjackLogic {
     // Player stays: the turn goes to the next one
     public GameState stay(GameState s, Turn player)
     {
-        if(s.getTurn() != player)
-        {
-            throw new IllegalStateException("It is not this player's turn");
-        }
+        requireTurn(s, player);
         GameState next = s.copy();
         next.setTurn(nextTurn(player));
         return next;
@@ -79,7 +80,16 @@ public class BlackjackLogic {
         else return Turn.DEALER;
     }
     
-    // Dealer draws while under 17, then the round is finished
+    // Throws if it is not the given player's turn
+    private void requireTurn(GameState s, Turn player)
+    {
+        if(s.getTurn() != player)
+        {
+            throw new IllegalStateException("It is not this player's turn");
+        }
+    }
+    
+    // Dealer draws while below DEALER_STAND_VALUE, then the round is finished
     public GameState playDealer(GameState s)
     {
         if(s.getTurn() != Turn.DEALER)
@@ -89,7 +99,7 @@ public class BlackjackLogic {
         GameState next = s.copy();
         Deck deck = Deck.fromString(next.getDeck());
         Hand dealer = Hand.fromString(next.getDealerHand());
-        while(dealer.getValue() < 17)
+        while(dealer.getValue() < DEALER_STAND_VALUE)
         {
             dealer.addCard(deck.draw());
         }
