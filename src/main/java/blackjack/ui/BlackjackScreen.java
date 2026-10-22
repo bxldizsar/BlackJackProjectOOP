@@ -11,6 +11,7 @@ import blackjack.model.Hand;
 import blackjack.model.MoveType;
 import blackjack.model.Turn;
 import blackjack.logic.BlackjackLogic;
+import blackjack.net.GameSyncListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -28,7 +29,7 @@ import javax.swing.SwingConstants;
  */
 
 // Table screen: dealer, two players, buttons and a status line
-public class BlackjackScreen extends JPanel{
+public class BlackjackScreen extends JPanel implements GameSyncListener{
     
     private static final Color TABLE_GREEN = new Color(20, 100, 0);
 
@@ -129,6 +130,20 @@ public class BlackjackScreen extends JPanel{
                 actions.requestNewRound();
             }
         });
+    }
+    
+    // GameSyncListener: the room has a new version
+    @Override
+    public void stateChanged(GameState state)
+    {
+        showState(state);
+    }
+    
+    // GameSyncListener: reading the room failed
+    @Override
+    public void syncFailed(String message)
+    {
+        onConnectionProblem(message);
     }
     
     public void showState(GameState state) 
