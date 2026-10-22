@@ -1,43 +1,40 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
- */
 package blackjack.model;
 
 /**
  *
  * @author boldi
  */
-public enum GameStatus {
+// The state of a room. dbValue is the text we store in the status column.
+public enum GameStatus
+{
     WAITING("waiting"),
     PLAYING("playing"),
     FINISHED("finished"),
-    TIMEOUT("timeout"); 
-    
+    TIMEOUT("timeout");
+
     private final String dbValue;
-    
-    GameStatus(String dbValue) 
+
+    GameStatus(String dbValue)
     {
         this.dbValue = dbValue;
     }
-    
+
     public String getDbValue()
     {
         return dbValue;
     }
-    
-    public static GameStatus
-            fromDbValue(String value)
+
+    // "waiting" -> WAITING. An unknown text (or null) is an error,
+    // because every room must have a status.
+    public static GameStatus fromDbValue(String value)
+    {
+        for (GameStatus status : values())
+        {
+            if (status.dbValue.equals(value))
             {
-                for (GameStatus status : values())
-                {
-                    if (status.dbValue.equals(value))
-                    {
-                        return status;
-                    }
-                }
-                throw new IllegalArgumentException("Ismeretlen status: " + value);
+                return status;
             }
-            
-    
+        }
+        throw new IllegalArgumentException("Unknown status: " + value);
+    }
 }
