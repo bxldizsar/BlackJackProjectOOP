@@ -12,10 +12,17 @@ import java.util.List;
  */
 public class Hand {
     
+    // The highest value that is still not a bust
+    public static final int MAX_VALUE = 21;
+    
     private final List<Card> cards = new ArrayList<>();
     
     public void addCard(Card card)
     {
+        if(card == null)
+        {
+            throw new IllegalArgumentException("Card must not be null");
+        }
         cards.add(card);
     }
     
@@ -30,15 +37,15 @@ public class Hand {
         int aceCount = 0;
         for(Card card : cards)
         {
-            sum += cardValue(card);
-            if(card.getRank().equals("A"))
+            sum += card.getRank().getValue();
+            if(card.getRank() == Rank.ACE)
             {
                 aceCount++;
             }
         }
         
-        //If the value of the cards went above 21, count A as 1
-        while(sum > 21 && aceCount > 0)
+        //If the value of the cards went above 21, count ACE as 1 instead of 11
+        while(sum > MAX_VALUE && aceCount > 0)
         {
             sum -= 10;
             aceCount--;
@@ -48,24 +55,7 @@ public class Hand {
     
     public boolean isBust()
     {
-        return getValue() > 21;
-    }
-    
-    private int cardValue(Card card)
-    {
-        String rank = card.getRank();
-        if(rank.equals("A"))
-        {
-            return 11;
-        }
-        else if(rank.equals("J") || rank.equals("Q") || rank.equals("K"))
-        {
-            return 10;
-        }
-            else
-            {
-                return Integer.parseInt(rank);
-            }
+        return getValue() > MAX_VALUE;
     }
     
     // Text form for the database, e.g. "A-C,10-H"

@@ -4,13 +4,6 @@
  */
 package blackjack.ui;
 
-
-/**
- *
- * @author ministar
- */
-
-// Table screen: dealer, two players, buttons and a status line
 import blackjack.model.Card;
 import blackjack.model.GameState;
 import blackjack.model.GameStatus;
@@ -29,10 +22,16 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+/**
+ *
+ * @author ministar
+ */
 
-
+// Table screen: dealer, two players, buttons and a status line
 public class BlackjackScreen extends JPanel{
     
+    private static final Color TABLE_GREEN = new Color(20, 100, 0);
+
     public interface Actions
     {
         void submitMove(Turn me, MoveType move);
@@ -41,14 +40,18 @@ public class BlackjackScreen extends JPanel{
     
     private final Turn me;
     private final Actions actions;
+    
     private final CardImages images = new CardImages();
-    private JPanel dealerPanel;
-    private JPanel p1Panel;
-    private JPanel p2Panel;
-    private JButton hitButton;
-    private JButton stayButton;
-    private JButton newRoundButton;
-    private JLabel statusLabel;
+    
+    private final JPanel dealerPanel = new JPanel();
+    private final JPanel p1Panel = new JPanel();
+    private final JPanel p2Panel = new JPanel();
+    
+    private final JButton hitButton = new JButton("HIT");
+    private final JButton stayButton = new JButton("STAY");
+    private final JButton newRoundButton = new JButton("NEW ROUND");
+    
+    private final JLabel statusLabel = new JLabel("", SwingConstants.CENTER);
     
     private final BlackjackLogic logic = new BlackjackLogic();
     
@@ -58,31 +61,38 @@ public class BlackjackScreen extends JPanel{
     
     public BlackjackScreen(Turn me, Actions actions)
     {
+        if(me != Turn.P1 && me != Turn.P2)
+        {
+            throw new IllegalArgumentException("The screen belongs to P1 or P2");
+        }
         this.me = me;
         this.actions = actions;
         setLayout(new BorderLayout());
-        setBackground(new Color(0, 100, 0)); //green table
-        
+        setBackground(TABLE_GREEN);
+        add(buildCenter(), BorderLayout.CENTER);
+        add(buildSouth(), BorderLayout.SOUTH);
+        addListeners();
+    }
+    
+    // The three hand panels (dealer, P1, P2) on the green table
+    private JPanel buildCenter()
+    {
         JPanel center = new JPanel(new GridLayout(3, 1));
         center.setOpaque(false);
-        dealerPanel = new JPanel();
-        p1Panel = new JPanel();
-        p2Panel = new JPanel();
         dealerPanel.setOpaque(false);
         p1Panel.setOpaque(false);
         p2Panel.setOpaque(false);
         center.add(dealerPanel);
         center.add(p1Panel);
         center.add(p2Panel);
-        add(center, BorderLayout.CENTER);
-        
+        return center;
+    }
+    
+    // Button row and status line
+    private JPanel buildSouth()
+    {
         // default layout is FlowLayout
         JPanel buttonRow = new JPanel();
-        hitButton = new JButton("HIT");
-        stayButton = new JButton("STAY");
-        newRoundButton = new JButton("NEW ROUND");
-        statusLabel = new JLabel("", SwingConstants.CENTER);
-        statusLabel.setForeground(Color.WHITE);
         buttonRow.setOpaque(false);
         buttonRow.add(hitButton);
         buttonRow.add(stayButton);
@@ -92,8 +102,12 @@ public class BlackjackScreen extends JPanel{
         south.setOpaque(false);
         south.add(buttonRow, BorderLayout.CENTER);
         south.add(statusLabel, BorderLayout.SOUTH);
-        add(south, BorderLayout.SOUTH);
-        
+        return south;
+    }
+    
+    // Button click handlers
+    private void addListeners()
+    {
         hitButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e)
@@ -140,35 +154,33 @@ public class BlackjackScreen extends JPanel{
         List<Card> cards = hand.getCards();
         for(int i = 0; i < cards.size(); i++)
         {
-            ImageIcon icon;
-            if(hideFirst && i == 0)
-            {
-                icon = images.getBack();            // face-down card
-            }
-            else
-            {
-                icon = images.getImage(cards.get(i));
-            }
-            JLabel label;
-            if(icon == null)
-            {
-                if(hideFirst && i == 0)
-                {
-                    label = new JLabel("?");     // hidden card, never show its real text
-                }
-                else
-                {
-                    label = new JLabel(cards.get(i).toString());  // image missing: show text
-                }
-            }
-            else
-            {
-                label = new JLabel(icon);
-            }
-            panel.add(label);
+            panel.add(createCardLabel(cards.get(i), hideFirst && i == 0));
         }
         panel.revalidate();                         // recalculate the layout
         panel.repaint();                            // redraw
+    }
+    
+    // One label for a card: face-down "?", the card image, or its text if the image is missing
+    private JLabel createCardLabel(Card card, boolean faceDown)
+    {
+        if(faceDown)
+        {
+            ImageIcon image = images.getBack();
+            if(image == null)
+            {
+                return new JLabel("?");
+            }
+            else
+            {
+                return new JLabel(image);
+            }
+        }
+        ImageIcon icon = images.getImage(card);
+        if(icon == null)
+        {
+            return new JLabel(card.toString());
+        }
+        return new JLabel(icon);
     }
     
     private String statusText(GameState state)
