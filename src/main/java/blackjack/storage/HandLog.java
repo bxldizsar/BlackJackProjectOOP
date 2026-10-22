@@ -14,7 +14,7 @@ import java.io.IOException;
 public class HandLog 
 {
     public static final String FILE_NAME = "hands.csv";
-    public static final String HEADER = "kor,sajat_kez,ellenfel_keze,dealer_keze,eredmeny";
+    public static final String HEADER = "kor;sajat_kez;ellenfel_keze;dealer_keze;eredmeny";
     private static final String SEPARATOR = ";";
     
     private final File file;
