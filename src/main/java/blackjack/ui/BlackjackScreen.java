@@ -14,11 +14,11 @@ import blackjack.logic.BlackjackLogic;
 import blackjack.net.GameSyncListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.List;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -34,6 +34,7 @@ public class BlackjackScreen extends JPanel implements GameSyncListener{
     
     private static final Color TABLE_GREEN = new Color(20, 100, 0);
     private static final int MAX_CARDS_PER_ROW = 4;
+    private static final Font FONT = new Font("Arial", Font.BOLD, 13);
     
     public interface Actions
     {
@@ -107,6 +108,8 @@ public class BlackjackScreen extends JPanel implements GameSyncListener{
         JPanel south = new JPanel(new BorderLayout());
         south.setOpaque(false);
         south.add(buttonRow, BorderLayout.CENTER);
+        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setFont(FONT);
         south.add(statusLabel, BorderLayout.SOUTH);
         return south;
     }
@@ -284,6 +287,8 @@ public class BlackjackScreen extends JPanel implements GameSyncListener{
         area.setOpaque(false);
         JLabel label = new JLabel(title, SwingConstants.CENTER);
         label.setForeground(Color.WHITE);
+        
+        label.setFont(FONT);
         area.add(label, BorderLayout.NORTH);
         area.add(cardsPanel, BorderLayout.CENTER);
         return area;
