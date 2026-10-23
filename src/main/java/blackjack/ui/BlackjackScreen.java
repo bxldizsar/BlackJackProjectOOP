@@ -11,6 +11,7 @@ import blackjack.model.Hand;
 import blackjack.model.MoveType;
 import blackjack.model.Turn;
 import blackjack.logic.BlackjackLogic;
+import blackjack.logic.Outcome;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -72,10 +73,12 @@ public class BlackjackScreen extends JPanel{
         }
         this.me = me;
         this.actions = actions;
+        TableBackground table = new TableBackground();
+        table.setLayout(new BorderLayout());
+        table.add(buildCenter(), BorderLayout.CENTER);
+        table.add(buildSouth(), BorderLayout.SOUTH);
         setLayout(new BorderLayout());
-        setBackground(TABLE_GREEN);
-        add(buildCenter(), BorderLayout.CENTER);
-        add(buildSouth(), BorderLayout.SOUTH);
+        add(table, BorderLayout.CENTER);
         addListeners();
     }
     
@@ -239,20 +242,27 @@ public class BlackjackScreen extends JPanel{
         else if(state.getStatus() == GameStatus.TIMEOUT)
         {
             if(state.getP2Id() == null){ return "Game over: nobody joined the room in time"; }
-            if(state.getTurn() == Turn.P1)
+            Turn late = state.getTurn();
+            if(late == Turn.DEALER)
             {
-                return "Game over: Player 1 did not move";
+                late = Turn.P2;   // the machine of P2 plays the dealer
             }
-            else if(state.getTurn() == Turn.P2)
+            if(late == me)
             {
-                return "Game over: Player 2 did not move";
+                return "Game over: you did not move in time";
             }
-            return "Game over: the other player did not move";   // fallback, e.g. when the dealer was next
+            if(late != null)
+            {
+                return "Game over: " + titleFor(late) + " did not move in time";
+            }
+            return "Game over: the other player did not move in time";   // fallback
         }
         else if(state.getStatus() == GameStatus.FINISHED)
         {
-            return "Round over - P1: " + logic.outcomeFor(state, Turn.P1)
-                    + ", P2: " + logic.outcomeFor(state, Turn.P2);
+            Turn other = opponentOf(me);
+            String mine = outcomeText(logic.outcomeFor(state, me));
+            String theirs = otherOutcomeText(other, logic.outcomeFor(state, other));
+            return "Round over - " + mine + ", " + theirs;
         }
         else if(state.getStatus() == GameStatus.PLAYING && state.getTurn() == me)
         {
@@ -315,5 +325,44 @@ public class BlackjackScreen extends JPanel{
         area.add(label, BorderLayout.NORTH);
         area.add(cardsPanel, BorderLayout.CENTER);
         return area;
+    }
+    
+    // Display text for a result, from the point of view of the player who sees it
+    private String outcomeText(Outcome outcome)
+    {
+        if(outcome == Outcome.WIN)
+        {
+            return "You win!";
+        }
+        if(outcome == Outcome.LOSE)
+        {
+            return "You lose";
+        }
+        return "It is a push";
+    }
+    
+    // The other player of the table
+    private Turn opponentOf(Turn player)
+    {
+        if(player == Turn.P1)
+        {
+            return Turn.P2;
+        }
+        return Turn.P1;
+    }
+    
+    // Result of ANOTHER player in words, e.g. "Player 2 loses"
+    private String otherOutcomeText(Turn player, Outcome outcome)
+    {
+        String name = titleFor(player);
+        if(outcome == Outcome.WIN)
+        {
+            return name + " wins";
+        }
+        if(outcome == Outcome.LOSE)
+        {
+            return name + " loses";
+        }
+        return name + " pushes";
     }
 }
