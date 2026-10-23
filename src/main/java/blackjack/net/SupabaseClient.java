@@ -2,6 +2,7 @@ package blackjack.net;
 
 import blackjack.model.GameState;
 import blackjack.model.GameStatus;
+import blackjack.model.RoomCode;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -24,7 +25,7 @@ public class SupabaseClient implements GameRepository
     private static final String GAMES_PATH = "/rest/v1/games";
     private static final String SIGNUP_PATH = "/auth/v1/signup";
     private static final int MAX_CODE_TRIES = 5;
-    private static final String CODE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    
 
     private final AppConfig config;
     private final HttpClient http;
@@ -207,22 +208,16 @@ public class SupabaseClient implements GameRepository
             throw new IOException("Bad answer from Supabase: " + e.getMessage());
         }
     }
-
     // The table only allows 4 capital letters or digits, like "AB12".
     // This also stops strange text from getting into the URL.
     static boolean isValidCode(String code)
     {
-        return code != null && code.matches("[A-Z0-9]{4}");
+        return RoomCode.isValid(code);
     }
-
     // makes a random 4-character code, like "K7Q2"
     private String newCode()
     {
-        String code = "";
-        for (int i = 0; i < 4; i++)
-        {
-            code = code + CODE_LETTERS.charAt(random.nextInt(CODE_LETTERS.length()));
-        }
-        return code;
+        return RoomCode.random(random);
     }
+  
 }
