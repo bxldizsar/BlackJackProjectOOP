@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
+
 /**
  *
  * @author ministar
@@ -16,27 +17,25 @@ import org.junit.jupiter.api.Test;
 
 // Tests for the Hand class: card values, ace rule and bust
 public class HandTest {
-    
+
     // K + 7 = 17
     @Test
-    public void kingAndSevenIsSeventeen()
-    {
+    public void kingAndSevenIsSeventeen() {
         Hand hand = new Hand();
         hand.addCard(new Card(Rank.KING, Suit.SPADES));
         hand.addCard(new Card(Rank.SEVEN, Suit.HEARTS));
         assertEquals(17, hand.getValue());
     }
-    
+
     // A + K = 21 (A = 11)
     @Test
-    public void aceAndKingIsTwentyOne()
-    {
+    public void aceAndKingIsTwentyOne() {
         Hand hand = new Hand();
         hand.addCard(new Card(Rank.ACE, Suit.DIAMONDS));
         hand.addCard(new Card(Rank.KING, Suit.SPADES));
         assertEquals(21, hand.getValue());
     }
-    
+
     // A + 9 + 5 = 15 (ace counts as 1)
     @Test
     public void aceNineFiveIsFifteen() {
@@ -76,20 +75,36 @@ public class HandTest {
         hand.addCard(new Card(Rank.KING, Suit.SPADES));
         assertFalse(hand.isBust());
     }
-    
+
     // Text conversion works both ways
     @Test
-    public void toStringAndFromStringRoundTrip()
-    {
+    public void toStringAndFromStringRoundTrip() {
         Hand hand = Hand.fromString("A-C,10-H");
         assertEquals("A-C,10-H", hand.toString());
         assertEquals(21, hand.getValue());
     }
-    
+
     @Test
-    public void addNullCardThrows()
-    {
+    public void addNullCardThrows() {
         Hand hand = new Hand();
         assertThrows(IllegalArgumentException.class, () -> hand.addCard(null));
+    }
+
+    @Test
+    public void aceAndKingIsBlackjack() {
+        Hand hand = Hand.fromString("A-C,K-H");
+        assertTrue(hand.isBlackjack());
+    }
+
+    @Test
+    public void threeCardTwentyOneIsNotBlackjack() {
+        Hand hand = Hand.fromString("7-C,7-H,7-D");
+        assertFalse(hand.isBlackjack());
+    }
+
+    @Test
+    public void twoCardTwentyIsNotBlackjack() {
+        Hand hand = Hand.fromString("10-C,K-H");
+        assertFalse(hand.isBlackjack());
     }
 }

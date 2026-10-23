@@ -161,10 +161,14 @@ public class BlackjackScreen extends JPanel{
     private void showHand(JPanel panel, String handText, boolean hideFirst)
     {
         panel.removeAll();                          // clear the old cards
+        Hand hand = Hand.fromString(handText);
         JPanel rows = new JPanel(new GridLayout(0, 1));   // the rows are packed tightly together
         rows.setOpaque(false);
-        panel.add(rows, BorderLayout.NORTH);
-        Hand hand = Hand.fromString(handText);
+        JPanel top = new JPanel(new BorderLayout());   // the card rows with the score right under them
+        top.setOpaque(false);
+        top.add(rows, BorderLayout.CENTER);
+        top.add(createScoreLabel(hand, hideFirst), BorderLayout.SOUTH);
+        panel.add(top, BorderLayout.NORTH);
         List<Card> cards = hand.getCards();
         JPanel row = null;
         for(int i = 0; i < cards.size(); i++)
@@ -204,6 +208,28 @@ public class BlackjackScreen extends JPanel{
         return new JLabel(icon);
     }
     
+    // Score text under a hand; empty while the dealer's first card is hidden
+    private JLabel createScoreLabel(Hand hand, boolean hidden)
+    {
+        if(hidden || hand.getCards().isEmpty())
+        {
+            return new JLabel(" ");
+        }
+        String text = "Score: " + hand.getValue();
+        if(hand.isBust())
+        {
+            text += " - BUST";
+        }
+        else if(hand.isBlackjack())
+        {
+            text += " - BLACKJACK";
+        }
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setForeground(Color.WHITE);
+        label.setFont(FONT);
+        return label;
+    }
+    
     private String statusText(GameState state)
     {
         if(state.getStatus() == GameStatus.WAITING)
@@ -213,7 +239,15 @@ public class BlackjackScreen extends JPanel{
         else if(state.getStatus() == GameStatus.TIMEOUT)
         {
             if(state.getP2Id() == null){ return "Game over: nobody joined the room in time"; }
-            return "Game over: the other player did not move";
+            if(state.getTurn() == Turn.P1)
+            {
+                return "Game over: Player 1 did not move";
+            }
+            else if(state.getTurn() == Turn.P2)
+            {
+                return "Game over: Player 2 did not move";
+            }
+            return "Game over: the other player did not move";   // fallback, e.g. when the dealer was next
         }
         else if(state.getStatus() == GameStatus.FINISHED)
         {
