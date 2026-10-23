@@ -63,6 +63,13 @@ public class HotseatDemo implements BlackjackScreen.Actions{
         refresh();
     }
     
+    @Override
+    public void backToMenu()
+    {
+        // this demo has no menu, so we only print it
+        System.out.println("Back to menu pressed");
+    }
+    
     private void refresh()
     {
         p1Screen.showState(state);

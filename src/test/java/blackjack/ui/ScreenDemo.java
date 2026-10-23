@@ -34,6 +34,13 @@ public class ScreenDemo {
             {
                 System.out.println("New round requested");
             }
+            
+            @Override
+            public void backToMenu()
+            {
+                // this demo has no menu, so we only print it
+                System.out.println("Back to menu pressed");
+            }
         });
         
         state = logic.stay(state, Turn.P1);

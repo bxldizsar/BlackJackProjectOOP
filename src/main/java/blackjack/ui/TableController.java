@@ -23,11 +23,17 @@ import javax.swing.Timer;
 // Runs one game on this computer: it is the link between the table screen and the network.
 public class TableController implements GameSyncListener, BlackjackScreen.Actions
 {
+    // App gets told here when the player leaves the table
+    public interface Listener
+    {
+        void tableClosed(TableController table);
+    }
     public static final int TIMEOUT_SECONDS = 30;
 
     private final Turn me;
     private final BlackjackLogic logic;
     private final HandLog handLog;
+    private final Listener listener;
     private final BlackjackScreen screen;
     private final GameActions actions;
     private final GameSync sync;
@@ -40,11 +46,12 @@ public class TableController implements GameSyncListener, BlackjackScreen.Action
     private int lastLoggedRound = 0;
 
     public TableController(Turn me, String code, GameRepository repository, BlackjackLogic logic,
-            HandLog handLog)
+            HandLog handLog, Listener listener)
     {
         this.me = me;
         this.logic = logic;
         this.handLog = handLog;
+        this.listener = listener;
         this.screen = new BlackjackScreen(me, this);
         this.actions = new GameActions(repository, logic, this);
         this.sync = new GameSync(repository, code, this);
@@ -126,7 +133,18 @@ public class TableController implements GameSyncListener, BlackjackScreen.Action
     {
         actions.requestNewRound(current);
     }
-
+      // The player leaves. If the game is not over yet, it ends for the other player too,
+    // so nobody waits for us and nobody can join an empty room.
+    @Override
+    public void backToMenu()
+    {
+        if (current.getStatus() != GameStatus.TIMEOUT)
+        {
+            actions.requestTimeout(current);
+        }
+        stop();
+        listener.tableClosed(this);
+    }
     // --- countdown ---
 
     private void restartCountdown()

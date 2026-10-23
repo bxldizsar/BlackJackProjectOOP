@@ -106,12 +106,27 @@ public class App
     private void startGame(GameRepository repository, GameState room, Turn me)
     {
         TableController controller = new TableController(me, room.getCode(), repository,
-                new BlackjackLogic(), new HandLog(HandLog.FILE_NAME));
+        new BlackjackLogic(), new HandLog(HandLog.FILE_NAME), new TableController.Listener()
+        {
+            @Override
+            public void tableClosed(TableController table)
+            {
+                closeTable(table);
+            }
+        });
         addScreen(SCREEN_TABLE, controller.getScreen());
         frame.setTitle("Blackjack - room " + room.getCode() + " - you are " + me);
         showScreen(SCREEN_TABLE);
         controller.start(room);
     }
+        // The player left the table: remove it and show the menu again.
+    private void closeTable(TableController table)
+    {
+        screens.remove(table.getScreen());
+        frame.setTitle("Blackjack");
+        showScreen(SCREEN_MENU);
+    }
+
 
     // without settings the game can't work, so we tell why and close
     private void showErrorAndExit(String message)
