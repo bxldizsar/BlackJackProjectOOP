@@ -13,6 +13,7 @@ import blackjack.model.Turn;
 import blackjack.logic.BlackjackLogic;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
@@ -170,7 +171,7 @@ public class BlackjackScreen extends JPanel{
         {
             if(i % MAX_CARDS_PER_ROW == 0)
             {
-                row = new JPanel();
+                row = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 2));
                 row.setOpaque(false);
                 rows.add(row);
             }
@@ -211,6 +212,7 @@ public class BlackjackScreen extends JPanel{
         }
         else if(state.getStatus() == GameStatus.TIMEOUT)
         {
+            if(state.getP2Id() == null){ return "Game over: nobody joined the room in time"; }
             return "Game over: the other player did not move";
         }
         else if(state.getStatus() == GameStatus.FINISHED)
@@ -262,7 +264,7 @@ public class BlackjackScreen extends JPanel{
         }
         if(player == me)
         {
-            title += " (you)";
+            title += " (You)";
         }
         return title;
     }
