@@ -18,6 +18,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -109,6 +110,7 @@ public class BlackjackScreen extends JPanel{
         south.add(buttonRow, BorderLayout.CENTER);
         statusLabel.setForeground(Color.WHITE);
         statusLabel.setFont(FONT);
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));   // space under the text
         south.add(statusLabel, BorderLayout.SOUTH);
         return south;
     }
