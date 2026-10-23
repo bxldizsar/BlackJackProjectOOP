@@ -25,14 +25,24 @@ public class TableControllerTest
 {
     private File file;
     private TableController controller;
+    // how many times the controller told "App" that the table was closed
+    private int closedCount;
 
     @BeforeEach
     public void setUp() throws IOException
     {
         file = File.createTempFile("hands", ".csv");
         file.delete();
+        closedCount = 0;
         controller = new TableController(Turn.P1, "AB12", new FakeGameRepository(),
-                new BlackjackLogic(), new HandLog(file.getPath()));
+                new BlackjackLogic(), new HandLog(file.getPath()), new TableController.Listener()
+        {
+            @Override
+            public void tableClosed(TableController table)
+            {
+                closedCount++;
+            }
+        });
     }
 
     @AfterEach
@@ -70,6 +80,19 @@ public class TableControllerTest
 
         assertEquals(3, countLines());
     }
+    
+    @Test
+    public void backToMenuClosesTheTable()
+    {
+        GameState over = finishedRound(1, 5);
+        over.setStatus(GameStatus.TIMEOUT);
+        controller.stateChanged(over);
+
+        controller.backToMenu();
+
+        assertEquals(1, closedCount);
+    }
+
 
     // a finished room with some cards in it
     private GameState finishedRound(int round, int version)

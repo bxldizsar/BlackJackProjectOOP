@@ -42,6 +42,8 @@ public class BlackjackScreen extends JPanel{
     {
         void submitMove(Turn me, MoveType move);
         void requestNewRound();
+        // the "Back to menu" / "Cancel" button
+        void backToMenu();
     }
     
     private final Turn me;
