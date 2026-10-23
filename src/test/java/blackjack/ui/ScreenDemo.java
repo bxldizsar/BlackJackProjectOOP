@@ -38,8 +38,7 @@ public class ScreenDemo {
             @Override
             public void backToMenu()
             {
-                // this demo has no menu, so we only print it
-                System.out.println("Back to menu pressed");
+                //nothing to do in the demo
             }
         });
         

@@ -58,6 +58,7 @@ public class BlackjackScreen extends JPanel{
     private final JButton hitButton = new JButton("HIT");
     private final JButton stayButton = new JButton("STAY");
     private final JButton newRoundButton = new JButton("NEW ROUND");
+    private final JButton menuButton = new JButton("BACK TO MENU");
     
     private final JLabel statusLabel = new JLabel("", SwingConstants.CENTER);
     
@@ -72,6 +73,10 @@ public class BlackjackScreen extends JPanel{
         if(me != Turn.P1 && me != Turn.P2)
         {
             throw new IllegalArgumentException("The screen belongs to P1 or P2");
+        }
+        if(actions == null)
+        {
+            throw new IllegalArgumentException("Actions must not be null");
         }
         this.me = me;
         this.actions = actions;
@@ -110,6 +115,7 @@ public class BlackjackScreen extends JPanel{
         buttonRow.add(hitButton);
         buttonRow.add(stayButton);
         buttonRow.add(newRoundButton);
+        buttonRow.add(menuButton);
         
         JPanel south = new JPanel(new BorderLayout());
         south.setOpaque(false);
@@ -145,12 +151,30 @@ public class BlackjackScreen extends JPanel{
                 actions.requestNewRound();
             }
         });
+        menuButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                actions.backToMenu();
+            }
+        });
     }
     
     public void showState(GameState state) 
     {
         this.state = state;
-        showHand(dealerPanel, state.getDealerHand(), state.getStatus() != GameStatus.FINISHED);
+        
+        GameStatus status = state.getStatus();
+        if(status == GameStatus.WAITING)
+        {
+            menuButton.setText("CANCEL");
+        }
+        else
+        {
+            menuButton.setText("BACK TO MENU");
+        }
+        
+        showHand(dealerPanel, state.getDealerHand(), state.getStatus() == GameStatus.PLAYING);
         showHand(p1Panel, state.getP1Hand(), false);
         showHand(p2Panel, state.getP2Hand(), false);
         
@@ -159,6 +183,7 @@ public class BlackjackScreen extends JPanel{
         hitButton.setEnabled(myTurn);
         stayButton.setEnabled(myTurn);
         newRoundButton.setEnabled(state.getStatus() == GameStatus.FINISHED);
+        menuButton.setEnabled(status != GameStatus.PLAYING);
         baseStatus = statusText(state);
         statusLabel.setText(baseStatus);
     }
@@ -261,10 +286,7 @@ public class BlackjackScreen extends JPanel{
         }
         else if(state.getStatus() == GameStatus.FINISHED)
         {
-            Turn other = opponentOf(me);
-            String mine = outcomeText(logic.outcomeFor(state, me));
-            String theirs = otherOutcomeText(other, logic.outcomeFor(state, other));
-            return "Round over - " + mine + ", " + theirs;
+            return resultText(state);
         }
         else if(state.getStatus() == GameStatus.PLAYING && state.getTurn() == me)
         {
@@ -366,5 +388,32 @@ public class BlackjackScreen extends JPanel{
             return name + " loses";
         }
         return name + " pushes";
+    }
+    
+    // Text at the end of a round, from the point of view of this player
+    private String resultText(GameState state)
+    {
+        Turn other = opponentOf(me);
+        Outcome mine = logic.outcomeFor(state, me);
+        Outcome theirs = logic.outcomeFor(state, other);
+        if(mine == theirs)
+        {
+            return "Round over - " + bothText(mine);
+        }
+        return "Round over - " + outcomeText(mine) + ", " + otherOutcomeText(other, theirs);
+    }
+    
+    // One sentence when both players have the same result
+    private String bothText(Outcome outcome)
+    {
+        if(outcome == Outcome.WIN)
+        {
+            return "both players win";
+        }
+        if(outcome == outcome.LOSE)
+        {
+            return "both players lose";
+        }
+        return "both players draw";
     }
 }
