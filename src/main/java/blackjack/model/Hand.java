@@ -58,6 +58,12 @@ public class Hand {
         return getValue() > MAX_VALUE;
     }
     
+    // True for exactly two cards worth 21 (display only, it has no effect on the result)
+    public boolean isBlackjack()
+    {
+       return cards.size() == 2 && getValue() == MAX_VALUE;
+    }
+    
     // Text form for the database, e.g. "A-C,10-H"
     @Override
     public String toString()

@@ -16,8 +16,8 @@ import javax.swing.ImageIcon;
 // Loads card images from the resources folder and scales them
 public class CardImages {
     
-    public static final int CARD_WIDTH = 70;
-    public static final int CARD_HEIGHT = 100;
+    public static final int CARD_WIDTH = 64;
+    public static final int CARD_HEIGHT = 92;
     
     // Image of one card, e.g. A-C.png
     public ImageIcon getImage(Card card)
