@@ -316,6 +316,11 @@ public class BlackjackScreen extends JPanel{
     
     public void onConnectionProblem(String message)
     {
+        // After a timeout the game is over: the game over text must stay on the screen
+        if(state != null && state.getStatus() == GameStatus.TIMEOUT)
+        {
+            return;
+        }
         statusLabel.setText("Connection problem: " + message);
     }
     
