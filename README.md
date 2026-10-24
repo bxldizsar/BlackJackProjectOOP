@@ -137,5 +137,5 @@ Minden mentés csak akkor sikerül, ha a sor `version` értéke közben nem vál
 
 ## Források
 
-- Háttérkép: GABI_IRJA_BE_A_FORRAST
-- Kártyaképek: GABI_IRJA_BE_A_FORRAST
+- Háttérkép: (src/main/resources/table.jpg): https://www.pexels.com/photo/a-blue-textured-background-15429341/
+- Kártyaképek: (src/main/resources/cards): https://github.com/ImKennyYip/blackjack-java/tree/master/cards
