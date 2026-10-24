@@ -133,12 +133,12 @@ public class TableController implements GameSyncListener, BlackjackScreen.Action
     {
         actions.requestNewRound(current);
     }
-      // The player leaves. If the game is not over yet, it ends for the other player too,
-    // so nobody waits for us and nobody can join an empty room.
+    // The player leaves. If the game is still going (waiting or playing), it ends for the other player too,
+    // so nobody waits for us. After a finished round the other player keeps seeing the result.
     @Override
     public void backToMenu()
     {
-        if (current.getStatus() != GameStatus.TIMEOUT)
+        if (current.getStatus() == GameStatus.WAITING || current.getStatus() == GameStatus.PLAYING)
         {
             actions.requestTimeout(current);
         }
