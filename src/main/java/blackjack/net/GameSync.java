@@ -119,6 +119,8 @@ public class GameSync
         });
     }
 
+    // stop() can cut a request in the middle, that is not an error,
+    // so after stop() we do not tell the listener anything
     private void tellFailed(final String message)
     {
         SwingUtilities.invokeLater(new Runnable()
@@ -126,7 +128,10 @@ public class GameSync
             @Override
             public void run()
             {
-                listener.syncFailed(message);
+                if (running)
+                {
+                    listener.syncFailed(message);
+                }
             }
         });
     }
